@@ -1,7 +1,8 @@
 # iOS Project Manager Application Project
 ### 업무를 관리해주는 트렐로의 기능을 구현한 프로젝트 매니저 앱 프로젝트 (클라이언트 파트)
+[Ground Rule](https://github.com/GREENOVER/ios-project-manager/blob/main/GroundRule.md)
 ***
-#### What have I done?
+#### What I learned✍️
 - Localization
 - JSON
 - Decode
@@ -17,7 +18,7 @@
 - Undo & Redo
 - DateFormatter
 
-#### What I learned
+#### What have I done🧑🏻‍💻
 - 지역화를 구현해 한국 / 프랑스 / 영어로 언어가 나타나도록 구현하였다.
 - Todo/Doing/Done의 상태를 이용하여 각 해당 테이블 셀에 맞게 구현하였다.
 - 전체적인 뷰를 컬렉션 뷰 안에 테이블 뷰 3개가 들어가도록 구현하였다.
