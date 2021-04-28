@@ -59,7 +59,6 @@ class SheetViewController: UIViewController {
 }
 
 // MARK: - configure & checkOfModify
-
 extension SheetViewController {
     private func configureSheet() {
         if let mode = self.mode {

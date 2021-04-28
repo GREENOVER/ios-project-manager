@@ -309,7 +309,6 @@ extension  SectionCollectionViewCell {
             targetItem = sourceBoard.item(at: sourceIndexPath.row)
             sourceBoard.deleteItem(at: sourceIndexPath.row)
             sourceTableView.deleteRows(at: [sourceIndexPath], with: .automatic)
-            
             targetItem.updateProgressStatus(with: destinationBoard.title)
             destinationBoard.insertItem(at: indexPath.row, with: targetItem)
             destinationBoardTableView.insertRows(at: indexPaths, with: .automatic)
