@@ -43,6 +43,48 @@
 
 
 #### Thinking Point🤔
+- 고민점 (1)
+  - "칸반보드의 UI를 어떻게 효율적으로 구성할 수 있을까?"
+- 원인 및 대책
+  - 우선 컬렉션뷰를 배치하고 컬렉션뷰 셀을 3개로 나눠 각 셀에 Todo/Doing/Done 테이블 뷰를 넣는 구조로 기능을 분리하였다.
+  ```swift
+  extension SectionCollectionViewCell: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: BoardTableViewCell.identifier) as? BoardTableViewCell, let item = board?.item(at: indexPath.row) else {
+            return UITableViewCell()
+        }
+        
+        cell.updateUI(with: item)
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return board?.itemsCount ?? 0
+    }
+    ...
+  ```
+  각 보더 즉 테이블 뷰마다 identifier를 설정하여 재사용으로 배치되도록 구성하였다.
+- 고민점 (2)
+  - "Mode case 네이밍에 관해 더 좋은 네이밍은 없을까?"
+  ```swift
+  enum Mode {
+    case editable
+    case uneditable
+  ...
+  ```
+- 원인 및 대책
+  - '수정 할 수 없는' 이라는 뜻으로 네이밍하였는데, 수정할 수없는것이 읽기전용이라는 네이밍이 더 적합하여 readOnly로 개선하였다.
+- 고민점 (3)
+  - "dueDate와 date 의미가 모호한데 개선해볼 수 없을까?"
+  ```swift
+  var dueDate: Int
+  var date: Date {
+  ```
+- 원인 및 대책
+  -ㅇ
+  var date: Date  dueDate는 
+  var date: Date {
+
 
 
 
