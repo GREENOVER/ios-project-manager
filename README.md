@@ -92,6 +92,7 @@
 - 해결방안
   - 코드의 변수로 선언된 부분은 위와 같이 Localizable.strings 파일을 이용해 지역화를 시켜주고 스토리보드에서 얹은 요소에 대한 지역화는 아래와 같이 Main.string 스토리보드 지역화 파일에 별도 작성을 해주어야한다.
   <img width="263" alt="스크린샷 2021-04-28 오후 4 03 45" src="https://user-images.githubusercontent.com/72292617/116360915-61116980-a83b-11eb-8854-709c865598c2.png">
+
   ```
   /* Class = "UIBarButtonItem"; title = "Done"; ObjectID = "1Iz-ek-qSt"; */
   "1Iz-ek-qSt.title" = "Terminé";
@@ -114,6 +115,7 @@
   /* Class = "UIBarButtonItem"; title = "Cancel"; ObjectID = "keU-l8-vF1"; */
   "keU-l8-vF1.title" = "annuler";
   ```
+
   해당 스토리보드 상 객체의 오브젝트 ID를 캐치하여 추가하는 방향으로 수정해보았다.
   <img width="256" alt="스크린샷 2021-04-28 오후 4 05 08" src="https://user-images.githubusercontent.com/72292617/116361089-8aca9080-a83b-11eb-88b8-81d5683f71c9.png">
 
