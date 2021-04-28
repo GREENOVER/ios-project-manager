@@ -44,8 +44,33 @@
 - 원인
   - 네트워크가 단절되고 와이파이로 연결되든 안되든 변경시점이랑 차이가 나서 탐지를 정확하게 못하는것같다.
 - 해결방안
-  - 우선 
-  - 네트워크가 단절되고 와이파이로 연결되든 안되든 변경시점이랑 차이가 나서 탐지를 정확하게 못하는것같다.
+  - 우선 네트워크를 백그라운드에서 모니터링할 수 있도록 구현하여 네트워크 비정상적일 시 화면에 레이블이 나타날 수 있도록 구현하였다.
+  ```swift
+  extension ProjectManagerViewController {
+    func configureNetworkMonitor() {
+        let monitor = NWPathMonitor()
+        
+        monitor.pathUpdateHandler = { path in
+            
+            if path.status != .satisfied {
+                print("네트워크에 연결되어 있지 않습니다.")
+                DispatchQueue.main.async {
+                    self.networkLabel.isHidden = false
+                }
+            } else {
+                print("네트워크에 연결되어 있습니다.")
+                DispatchQueue.main.async {
+                    self.networkLabel.isHidden = true
+                }
+            }
+        }
+        monitor.start(queue: DispatchQueue.global(qos: .background))
+    }
+  }
+  ```
+  <img width="1164" alt="스크린샷 2021-04-28 오후 3 46 35" src="https://user-images.githubusercontent.com/72292617/116358762-f3fcd480-a838-11eb-9ef6-644606011268.png">   
+
+  여기서 드는 생각이 텍스트를 찍어주는것은 뷰가 업데이트되는 시점일텐데 그렇다면 해당 isHidden을 해주는것을 메인스레드로 보내 동작하게하면 실시간으로 변화가 나타날것 같다.
 
 
 
@@ -136,6 +161,61 @@
   ```
 - 원인 및 대책
   - 해당 메서드는 updateUI 메서드가 호출되는 경우에만 호출된다. 그럼으로 항상 내부적으로 호출되어 dueDate의 상태(기간만료 되었는지)를 체크해준다는걸 보여줄 수 있다.
+- 고민점 (6)
+  - "히스토리 내역을 굳이 로컬디스크에 저장해놓을 필요가 있을까?"
+- 원인 및 대책
+  - 앱의 할일 리스트들은 로컬디스크에 저장해놓아야하지만 인앱 상황에서 변경되는 히스토리들은 굳이 로컬디스크에 캐싱하여 저장할 필요가 없이 앱이 켜져있는 동안의 히스토리만 보여주면 된다고 생각한다. 만약 로컬로 저장해놓는다면 계속 데이터가 쌓일것이고 사용자 입장에서도 불편할것같다. 그래서 HistoryManager라는 싱글톤 타입을 통해 앱이 켜져있을때만 historyContainer로 구현한 String,Date 자료구조에 담고 테이블뷰에 데이터를 나타낼 수 있도록하였다.
+  ```swift
+  class HistoryManager {
+    static let shared = HistoryManager()
+    var historyContainer = [(HistoryLog, Date)]()
+  }
+  let historyManager = HistoryManager.shared
+  ```
+- 고민점 (7)
+  - "로그 객체를 출력할때 자동으로 description이 출력되게 할 순 없을까?"
+  ```swift
+  enum HistoryLog {
+     case add(String)
+     case move(String, String, String)
+     case delete(String)
+
+     var description: String {
+         switch self {
+         case .add(let title):
+             return "Added \(title)"
+         case .move(let title, let before,  let after):
+             return "Moved \(title) from \(before) to \(after)"
+         case .delete(let title):
+             return "Deleted \(title)"
+         }
+     }
+   }
+   ```
+- 원인 및 대책
+  - 매번 description 출력을 위해 한단계 거치는것이 불편해서 찾아보았는데 CustomConvertibleString 프로토콜에서 해당 기능을 해준다. 이 부분을 토대로 개선해보았다.
+  ```swift
+  enum HistoryLog: CustomStringConvertible {
+    case add(String)
+    case move(String, String, String)
+    case delete(String, String)
+    
+    var description: String {
+        switch self {
+        case .add(let title):
+            return String(format: NSLocalizedString("Added '%@'.", comment: ""), title)
+        case .move(let title, let before,  let after):
+            return String(format: NSLocalizedString("Moved '%@' from %@ to %@.", comment: ""), title, before.localized, after.localized)
+        case .delete(let title, let before):
+            return String(format: NSLocalizedString("Removed '%@' from %@.", comment: ""), title.localized, before.localized)
+        }
+    }
+  }
+  ```
+- 고민점 (8)
+  - "TableView 3개로 UI를 구성할 수 있지 않을까?"
+- 원인 및 대책
+  - 테이블뷰 3개로 구성할 수 있겠지만 컬렉션뷰를 사용할때 섹션의 커스터마이징 측면에서 더 용이하다고 판단되었다. 단순히 리스트를 보여준다면 테이블뷰가 나쁘지 않겠지만 컬렉션뷰를 통해 각 센션간 드래그앤드롭과 데이터 변경등 더 커스텀스러워 컬렉션뷰 셀에 테이블뷰를 얹어 구현하게 되었다.
 
 
 
