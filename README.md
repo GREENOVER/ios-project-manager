@@ -35,3 +35,17 @@
 - 노티피케이션 센터를 이용해 메서드 상태 변화를 관찰하고 기능 동작하도록 구현하였다.
 - Undo & Redo를 통해 되돌리기 및 되돌리기 취소 기능을 구현하였다.
 - 날짜 형식을 알맞게 포맷팅하여 변환하였다.
+
+
+
+#### Trouble Shooting 👨‍🔧
+
+
+
+#### Thinking Point🤔
+
+
+
+#### InApp📱
+![InApp_1](https://user-images.githubusercontent.com/72292617/116354491-784c5900-a833-11eb-8bcd-99899bfeb05d.gif)
+
