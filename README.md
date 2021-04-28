@@ -39,6 +39,10 @@
 
 
 #### Trouble Shooting 👨‍🔧
+- 문제점 (1)
+  - 네트워크 상태 연결을 앱 실행되고있는 중간에 끊으면 네트워크 상태 탐지를 못하는 문제점
+- 원인
+  - 네트워크 상태 연결을 앱 실행되고있는 중간에 끊으면 네트워크 상태 탐지를 못하는 문제점 
 
 
 
@@ -81,9 +85,54 @@
   var date: Date {
   ```
 - 원인 및 대책
-  -ㅇ
-  var date: Date  dueDate는 
-  var date: Date {
+  - dueDate는 아이템에 대한 데이터를 받아오는 시스템 시간임으로 timeStamp로 date는 받아온 timeStamp에 대한 날짜 표시로 변환하는것임으로 dueDate로 개선하였다.
+  ```swift
+  var timeStamp: Int
+  var dueDate: Date {
+      return Date(timeIntervalSince1970: TimeInterval(timeStamp))
+  }
+  ```
+- 고민점 (4)
+  - "onvertDateToString 메소드가 extension으로 선언되었을 때와 직접 선언한 객체에서 선언되었을 때의 장단점은 무엇일까?"
+  ```swift
+  extension DateFormatter {
+    func convertDateToString(date: Date) -> String {
+        let currentLocale = Locale.current.collatorIdentifier ?? "ko_KR"
+        let formatter = DateFormatter()
+
+         formatter.locale = Locale(identifier: currentLocale)
+        formatter.dateFormat = "yyyy.MM.dd"
+
+         return formatter.string(from: date)
+    }
+  }
+  ```
+- 원인 및 대책
+  - DateFormatter를 extension하여 해당 메서드를 구현하게되면 추후 다른 클래스나 객체에서 해당 메서드를 호출할때 Item 타입의 인스턴스를 만들어 접근하지 않아도 된다. 클래스 내부에 메서드로 만들게되면 해당 메서드를 사용할때 객체 인스턴스를 만들고 호출해야함으로 인스턴스를 만드는 메모리가 잡혀 extension으로 접근하는것이 메모리적 측면에서 더 효율적이다.
+- 고민점 (5)
+  - "함수 안에 함수를 넣어 선언하는 상황과 이유는 무엇일까?"
+  ```swift
+  func updateUI(with item: Item) {
+        self.titleLabel.text = item.title
+        self.descriptionLabel.text = item.description
+        self.dueDateLabel.text = item.dateToString
+        
+        func configureDueDateLabelColor() {
+            let currentTimeInterval = Date().timeIntervalSince1970
+            let currentDateToInt = Int(currentTimeInterval)
+            
+            if currentDateToInt > item.timeStamp {
+                self.dueDateLabel.textColor = .red
+            } else {
+                self.dueDateLabel.textColor = .black
+            }
+        }
+        
+        configureDueDateLabelColor()
+    }
+  ```
+- 원인 및 대책
+  - 해당 메서드는 updateUI 메서드가 호출되는 경우에만 호출된다. 그럼으로 항상 내부적으로 호출되어 dueDate의 상태(기간만료 되었는지)를 체크해준다는걸 보여줄 수 있다.
 
 
 
