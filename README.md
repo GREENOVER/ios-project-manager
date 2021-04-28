@@ -72,9 +72,51 @@
 
   여기서 드는 생각이 텍스트를 찍어주는것은 뷰가 업데이트되는 시점일텐데 그렇다면 해당 isHidden을 해주는것을 메인스레드로 보내 동작하게하면 실시간으로 변화가 나타날것 같다.
 - 문제점 (2)
-  - ㅇ
-  여기서 드는 생각이 텍스트를 찍어주는것은 뷰가 업데이트되는 시점일텐데 그렇다면 해당 isHidden을 해주는것을 메인스레드로 보내 동작하게하면 실시간으로 변화가 나타날것 같다ㅈ
-  여기서 드는 생각이 텍스트를 찍어주는것은 뷰가 업데이트되는 시점일텐데 그렇다면 해당 isHidden을 해주는것을 메인스레드로 보내 동작하게하면 실시간으로 변화가 나타날것 같다.
+  - 지역화가 부분적으로만 이루어진 문제가 발생
+- 원인
+  - 코드에서 구현한 텍스트가 있고 스토리보드에서 구현한 텍스트가 있다. 지역화를 진행할때는 두 부분을 각 다른 파일에서 지역화를 시켜주도록 해야하는데, 코드 지역화 파일에만 지역화 내용을 추가해줘서 나타나는 문제
+  ```
+  "Project Manager" = "Chef de projet";
+  "Cancel" = "Annuler";
+  "Edit" = "mise en forme";
+
+  "TODO"  = "Plan";
+  "DOING" = "En cours";
+  "DONE"  =  "Terminé";
+
+  "Added '%@'." = "'%@'Ajouter.";
+  "Moved '%@' from %@ to %@." = "'%@'un %@dans %@to Nous avons bougé.";
+  "Removed '%@' from %@." = "'%@'un supprimer.";
+  ```
+  <img width="282" alt="스크린샷 2021-04-28 오후 4 02 55" src="https://user-images.githubusercontent.com/72292617/116360760-32938e80-a83b-11eb-830b-17f23baaf126.png">
+- 해결방안
+  - 코드의 변수로 선언된 부분은 위와 같이 Localizable.strings 파일을 이용해 지역화를 시켜주고 스토리보드에서 얹은 요소에 대한 지역화는 아래와 같이 Main.string 스토리보드 지역화 파일에 별도 작성을 해주어야한다.
+  <img width="263" alt="스크린샷 2021-04-28 오후 4 03 45" src="https://user-images.githubusercontent.com/72292617/116360915-61116980-a83b-11eb-8854-709c865598c2.png">
+  ```
+  /* Class = "UIBarButtonItem"; title = "Done"; ObjectID = "1Iz-ek-qSt"; */
+  "1Iz-ek-qSt.title" = "Terminé";
+
+  /* Class = "UINavigationItem"; title = "TODO"; ObjectID = "8tB-ho-ekQ"; */
+  "8tB-ho-ekQ.title" = "Plan";
+
+  /* Class = "UINavigationItem"; title = "Title"; ObjectID = "BsE-ch-KEa"; */
+  "BsE-ch-KEa.title" = "Titre";
+
+  /* Class = "UITextField"; placeholder = "Title"; ObjectID = "Ne9-CO-XbT"; */
+  "Ne9-CO-XbT.placeholder" = "Titre";
+
+  /* Class = "UILabel"; text = "Label"; ObjectID = "VLk-en-wR1"; */
+  "VLk-en-wR1.text" = "étiquette";
+
+  /* Class = "UILabel"; text = "Title"; ObjectID = "eqg-sO-J0R"; */
+  "eqg-sO-J0R.text" = "Titre";
+
+  /* Class = "UIBarButtonItem"; title = "Cancel"; ObjectID = "keU-l8-vF1"; */
+  "keU-l8-vF1.title" = "annuler";
+  ```
+  해당 스토리보드 상 객체의 오브젝트 ID를 캐치하여 추가하는 방향으로 수정해보았다.
+  <img width="256" alt="스크린샷 2021-04-28 오후 4 05 08" src="https://user-images.githubusercontent.com/72292617/116361089-8aca9080-a83b-11eb-88b8-81d5683f71c9.png">
+
 
 
 
