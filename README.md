@@ -126,7 +126,24 @@
   - HIG에서 답을 찾았는데 런치 스크린은 정적임으로 표시되는 텍스트를 현지화하지 않아 텍스트를 포함하지말라고 친절하게 나와있다. iOS 앱은 "로드 중 메시지"를 표시하지 않아야한다. 이걸 토대로 생각해보았을때 런치 스크린도 설정의 일부인데 앱의 지역화 텍스트를 빌드하고 설정을 통해 잡아와야하는데 런치스크린도 그런 데이터를 설정하는 단계라 언제 끝날지 몰라 지역화를 지원하지 않는다고 생각하고 결론지었다.
 - 해결방안
   - 지원되지 않는 런치 스크린에 대한 지역화 및 텍스트를 제거하였다.
-
+- 문제점 (4)
+  - 메모가 삭제 및 완료 되었는데도 유저노피티케이션 알림이 오는 문제
+- 원인
+  - 노티피케이션을 생성하고 호출이되었다면 메모가 삭제 및 완료되는 시점에서는 이미 호출된 노티피케이션 알림을 해제하는 기능도 구현해야하는데 이 부분이 구현되지 않아 발생하였다.
+- 해결방안
+  - 메모가 삭제되면 해당 Notification의 Identifier를 가지고 해제해주도록 구현 수정하였다.
+  ```swift
+      mutating func updateProgressStatus(with progressStatus: String) {
+        self.progressStatus = progressStatus
+        if self.progressStatus == ProgressStatus.done.rawValue {
+            notificationManager.removeNofitication(name: "\(self.dueDate)")
+        } else {
+            notificationManager.configureNotification(name: "\(self.dueDate)", date: self.dueDate)
+        }
+    }
+  ```
+  위와 같이 상태를 체크할때 Done 영역에 있어도 노티피케이션의 알림을 해제해준다.
+  
 
 
 #### Thinking Point🤔
@@ -271,6 +288,25 @@
   - "TableView 3개로 UI를 구성할 수 있지 않을까?"
 - 원인 및 대책
   - 테이블뷰 3개로 구성할 수 있겠지만 컬렉션뷰를 사용할때 섹션의 커스터마이징 측면에서 더 용이하다고 판단되었다. 단순히 리스트를 보여준다면 테이블뷰가 나쁘지 않겠지만 컬렉션뷰를 통해 각 센션간 드래그앤드롭과 데이터 변경등 더 커스텀스러워 컬렉션뷰 셀에 테이블뷰를 얹어 구현하게 되었다.
+- 고민점 (9)
+  - "UserNotification 설정 시 badge는 무슨 역할을 할까?"
+- 원인 및 대책
+  - 실제로 감이오지 않아 구현해보고 테스트를 해봤는데 뱃지는 그냥 앱 아이콘에 표시되는 아래와 같은 수이다. 1로 설정해놓은 1이 10으로 설정해놓으면 10이 뜬다. 앱에서 사용자에게 몇개의 알림이 있다고 보내주고 싶을때 설정하면 좋을것 같다.
+  <img width="148" alt="스크린샷 2021-04-28 오후 4 18 20" src="https://user-images.githubusercontent.com/72292617/116362745-59eb5b00-a83d-11eb-96b0-bed29202ef9d.png">
+- 고민점 (9)
+  - "App의 NotificationDelegate를 어디서 다뤄주면 좋을까?"
+- 원인 및 대책
+  - 처음 VC에서 해당 노티피를 구성하고 호출하니까 막연하게 Extension하여 구성하였다. 그런데 생각해보면 만약 App이 닫혀있고 푸시 알림을 통해 다시 앱의 뷰가 로드된다면 뷰가 정상적으로 로드되지 않거나 지연될 때 해당 기능의 역할을 제대로 수행하지 못한다. 그래서 App의 전반적인 부분의 역할을 해주는 AppDelegate에서 다뤄주는것이 더 적합하다고 생각한다.
+  ```swift
+  class AppDelegate: UIResponder, UIApplicationDelegate {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Override point for customization after application launch.
+        notificationManager.requestNotificationAuthorization()
+        return true
+    }
+  ```
+
+
 
 
 
